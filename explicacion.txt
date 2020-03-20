@@ -1,0 +1,119 @@
+Objetivo:
+Segun un archivo de entrada evaluar los perfiles de personas que podrian ser clientes potenciales
+
+Metodo:
+Comparar una lista de entrada con listas para los diferentes parametros con valores asignados.
+Segun el parametro estos tendran un peso diferente para el calculo de acertividad
+
+Necesario:
+Una lista con una evaluacion de los roles que poseen los clientes ya establecidos,
+valorizarlos segun importancia entre 0 - 10 y comparar con el archivo de entrada que todos los roles
+esten valorizados. De no estarlos es necesario agregarlos y darles un valor segun
+un analisis del rubro y la probabilidad de que este rol genere un beneficio para el proceso
+
+Una lista de las industrias, de los clientes ya establecidos. Darles una valorizacion entre 0 - 10
+segun la cantidad de ingresos que generan para la empresa y de que tan comun son
+en las carteras de clientes. Verificar que las industrias que estan en el archivo de entrada
+tambien ya esten valorizadas en la lista de industrias. NOTA: Si se desea marcar una industria como objetivo principal basta
+con darle una calificacion alta
+
+Lista de paises. Hacer un analisis de el valor de los paises para la empresa
+(Observar cuantos clientes posee la empresa por pais, la cantidad de ingresos que generan
+y la fiabilidad de los clientes), segun esta informacion crear una lista de los paises y darles una
+valorizacion entre 0 - 10. NOTA: Si se desea marcar un pais como objetivo principal basta
+con darle una calificacion alta
+
+COMO VALORIZAR LOS PARAMETROS SEGUN UNA BASE DE DATOS
+Para este metodo usaremos la base de datos de clientes actuales para hacer una valorizacion.
+Usaremos como base de medicion los Maximos de facturacion, cantidad de clientes y tiempo
+por parametro. De esta manera haremos una comparacion de perfil y los evaluaremos con esta comparativa
+retornandonos un valor entre 0 y 1.
+
+Campos necesarios de la base de datos:
+*Industrias:
+	-Facturacion (Anual, mensual, etc. Es a eleccion personal) por industria
+	-Cantidad de clientes en esa industria
+	-Media de tiempo (Meses) de la industria como cliente
+*Paises:
+	-Facturacion por pais
+	-Cantidad de clientes en esa pais
+	-Media de tiempo (Meses) como cliente por pais
+*Roles:
+	-Facturacion registrada por rol
+	-Cantidad de clientes por rol
+	-Media de tiempo (Meses) como clientes
+
+Formula para cada caso:
+	-PASO 1: Encontrar la industria, pais o rol (Depende d ela lista que se este trabajando)
+	con mas Facturacion, sera nuestro 'MAX'.
+	-PASO 2: Con nuestro MAX compararemos los valores restantes contra este maximo y obtendremos un
+	valor de relacion.
+	
+		valorFacturacion = facturacion / MAX_FACTURACION
+
+	 Repetir el paso 2 para la Cantidad de clientes y La media de tiempo como cliente
+	
+		valorClientes = clientes/ MAX_CLIENTES
+		valorTiempo = tiempo/ MAX_TIEMPO
+
+	-PASO 3:
+		Encontramos la valorizacion para cada industria, rol y pais.
+
+		valorizacion = (valorFacturacion + valorClientes  + valorTiempo)/3
+
+Con la valorizacion asignada a cada caso ya podemos comenzar a hacer la comparacion con los
+datos de entrada 'people.in'
+
+Dado que para este ejercicio no se cuenta con los datos de facturacion, clientes y tiempo.
+Estos seran otorgados mediante una funcion random()
+Y las industrias, roles y paises son extraidos del archivo input 'personas.in'
+
+Esto funciona solamente dado que es un ejercicio de prueba, en caso de querer utilizarlo en la realidad
+debera hacerse una lista segun la base de datos real de clientes.
+
+
+Campos a evaluar	|	Peso
+
+W_RECOMMENDATIONS	|	45
+W_CONNECTIONS		|	30
+W_INDUSTRIES		|	10
+W_COUNTRIES		|	8
+W_ROL			|	7
+
+Los pesos dados han son otorgados meramente por valorcion segun a criterio de quien evalue.
+
+En el caso de querer potenciar alguna de los parametros en especifico simplemente es necesario
+aumentar readecuar los pesos, teniendo en cuenta que la suma de estos no debe ser mayor a 100
+
+PROCESAMIENTO:
+
+PRIMER PASO:
+Primer paso ingresar los nombres de los archivos de entrada los cuales deberan de estar almacenados en resources/files/input/{Countries, Industries, Roles, People};
+
+Asi como el archivo people.in (Para este ejercicio) el contenido debera estar separado por pipes "|" y debera contener las siguientes columnas:
+PersonId, Name, LastName, CurrentRole, Country, Industry, NumberOfRecommendations, NumberOfConnections. En ese mismo orden.
+
+Para los demas archivos {countries.in, industries.in, roles.in} deberan igual estar separados por pipes y contener las siguientes columnas:
+Id, nombre, valorizacion
+
+Aqui igualmente ingresaremos los pesos para la ponderacion
+
+SEGUNDO PASO:
+Se extraeran los datos de los archivos y se llenaran las listas de cada archivo. Se hara una comparacion de los datos extraidos del archivo 'people'
+y asignara un valor segun la valorizacion que tengan en los archivos 'industry', 'roles' y 'countries'
+
+TERCER PASO:
+Se realizara el calculo de la ponderacion para cada persona segun las valorizaciones de los parametros y los pesos ingresados.
+
+Para el caso de las recomendaciones y conexiones se encontrara el maximo y en base a este se valorizara al resto.
+	
+	valorizacionRecomendaciones = recomendaciones / MAX_RECOMENDACIONES
+
+Lo mismo para conexiones.
+Esta formula nos devolvera un porcentual entre 0 y 1, el cual se multiplicara por el peso (W_RECOMMENDATIONS) y nos retornara un resultado de valorizacion.
+
+Terminado este proceso se
+listaran los 100 con puntuacion mas alta, luego se dara la opcion de imprimir listas de estadisticas.
+
+CUARTO PASO:
+Generar el archivo de salida en resources/files/outputs/People/people.out
